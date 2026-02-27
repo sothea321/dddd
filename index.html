@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOD Premium - Compact Admin</title>
+    <title>VOD Premium - Fixed Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap');
@@ -44,11 +44,6 @@
             border-radius: 1.25rem;
             transition: all 0.2s ease;
         }
-        .user-card:hover { 
-            transform: scale(1.01);
-            border-color: rgba(245, 158, 11, 0.4);
-            background: #243147 !important;
-        }
 
         .notification {
             position: fixed;
@@ -65,11 +60,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         
-        .stat-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
         .playlist-lock-overlay {
             position: absolute;
             inset: 0;
@@ -152,7 +142,6 @@
     <div id="admin-login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
         <div class="glass max-w-xs w-full p-8 rounded-[2rem] text-white text-center">
             <h3 class="text-lg font-black mb-6 text-amber-500 uppercase">Admin Access</h3>
-            <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-widest">បញ្ចូលលេខកូដសម្ងាត់អ្នកគ្រប់គ្រង</p>
             <input type="password" id="admin-pass-input" placeholder="••••" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-center text-2xl font-black outline-none mb-6 focus:border-amber-500">
             <button onclick="handleAdminLogin()" class="w-full btn-admin py-3 rounded-xl text-sm font-black shadow-lg">បញ្ជាក់</button>
             <button onclick="toggleModal('admin-login-modal')" class="w-full text-slate-500 text-xs font-bold pt-2 hover:text-white">បោះបង់</button>
@@ -162,55 +151,21 @@
     <!-- Admin Panel Modal -->
     <div id="admin-panel-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[110] hidden items-center justify-center p-4">
         <div class="bg-slate-900 w-full max-w-4xl max-h-[90vh] flex flex-col p-6 lg:p-8 rounded-[2.5rem] border border-white/10 text-white overflow-hidden shadow-2xl">
-            
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="bg-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center text-2xl">📋</div>
-                    <div>
-                        <h3 class="text-xl font-black">របាយការណ៍</h3>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">ទិន្នន័យអ្នកប្រើប្រាស់</p>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 items-center">
-                    <div class="stat-card px-4 py-2 rounded-xl text-center">
-                        <div class="text-[8px] font-black text-amber-500 uppercase">សរុប</div>
-                        <div class="text-lg font-black"><span id="user-total-count">0</span> <span class="text-[10px] text-slate-500">នាក់</span></div>
-                    </div>
-                    <div class="stat-card px-4 py-2 rounded-xl text-center">
-                        <div class="text-[8px] font-black text-blue-400 uppercase">Login</div>
-                        <div class="text-lg font-black"><span id="total-logins">0</span> <span class="text-[10px] text-slate-500">ដង</span></div>
-                    </div>
-                    <button onclick="toggleModal('admin-panel-modal')" class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-red-600 rounded-full transition-all text-xl">✕</button>
-                </div>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black">ការគ្រប់គ្រងអ្នកប្រើប្រាស់</h3>
+                <button onclick="toggleModal('admin-panel-modal')" class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-red-600 rounded-full transition-all text-xl">✕</button>
             </div>
 
-            <!-- Admin Settings Section -->
-            <div class="bg-amber-500/10 p-5 rounded-3xl border border-amber-500/20 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-center sm:text-left">
-                    <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest block mb-1">សុវត្ថិភាពគណនី</span>
-                    <span class="text-sm font-bold text-white italic">លេខសម្ងាត់ Admin ត្រូវបានការពារយ៉ាងតឹងរ៉ឹង</span>
-                </div>
-                <button onclick="changeAdminPasswordPrompt()" class="btn-admin px-6 py-2 rounded-xl text-[10px] font-black shadow-lg">ប្តូរលេខសម្ងាត់ Admin</button>
-            </div>
-
-            <!-- Add User Section -->
             <div class="bg-white/5 p-5 rounded-3xl border border-white/5 mb-6">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                    <div class="space-y-1">
-                        <label class="text-[9px] uppercase font-black text-slate-500 ml-2 tracking-widest">Username</label>
-                        <input type="text" id="new-username" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-sm text-white outline-none focus:border-amber-500">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[9px] uppercase font-black text-slate-500 ml-2 tracking-widest">Password</label>
-                        <input type="text" id="new-password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-sm text-white outline-none focus:border-amber-500">
-                    </div>
-                    <button onclick="addUser()" class="btn-primary h-10 rounded-xl font-black text-xs text-white shadow-lg w-full">បន្ថែមអ្នកប្រើថ្មី</button>
+                    <input type="text" id="new-username" placeholder="Username" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-sm text-white outline-none">
+                    <input type="text" id="new-password" placeholder="Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-sm text-white outline-none">
+                    <button onclick="addUser()" class="btn-primary h-10 rounded-xl font-black text-xs text-white">បន្ថែមអ្នកប្រើថ្មី</button>
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                <div id="user-list-container" class="space-y-2 pb-4 mt-2"></div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <div id="user-list-container" class="space-y-2"></div>
             </div>
         </div>
     </div>
@@ -222,29 +177,20 @@
         ];
 
         const DEFAULT_ADMIN_PASS = "123";
-
-        function getLatestAdminPass() {
-            return localStorage.getItem('vod_admin_pass') || DEFAULT_ADMIN_PASS;
-        }
-
         let authorizedUsers = JSON.parse(localStorage.getItem('vod_users')) || [];
         let currentUser = null;
         let isAdmin = false;
         let activeVideoIdx = -1;
-        
-        // កែលម្អការគ្រប់គ្រង Session ឱ្យមានភាពបត់បែន
-        const sessionID = sessionStorage.getItem('session_id') || Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('session_id', sessionID);
 
         function initApp() {
+            // ទាញយកឈ្មោះដែលបាន Login ចុងក្រោយ
             const loggedUser = localStorage.getItem('logged_in_user');
             
-            // ប្រសិនបើមាន User ធ្លាប់ Login ទុកក្នុង LocalStorage
             if (loggedUser) {
-                // ពិនិត្យមើលថាតើ User នោះនៅមានក្នុងបញ្ជីរឺអត់ (ក្រែងលោ Admin លុបចោល)
-                const userExists = authorizedUsers.some(u => u.user.toLowerCase() === loggedUser.toLowerCase());
-                if (userExists) {
-                    currentUser = loggedUser;
+                // ឆែកមើលឈ្មោះក្នុងបញ្ជីដោយមិនខ្វល់ពីអក្សរតូចធំ (Case-insensitive check)
+                const found = authorizedUsers.find(u => u.user.toLowerCase() === loggedUser.toLowerCase());
+                if (found) {
+                    currentUser = found.user; // ប្រើឈ្មោះដែលរកឃើញក្នុង Database
                     updateAuthUI();
                     renderPlaylist();
                     selectVideo(0);
@@ -254,6 +200,44 @@
                 }
             } else {
                 renderPlaylist();
+            }
+        }
+
+        function handleUserLogin() {
+            const uInput = document.getElementById('login-user').value.trim();
+            const pInput = document.getElementById('login-pass').value.trim();
+            
+            if (!uInput || !pInput) {
+                showToast("សូមបំពេញឱ្យគ្រប់!", "error");
+                return;
+            }
+
+            // ស្វែងរក User (ឆែកឈ្មោះ Case-insensitive តែ Password ត្រូវតែដូចគ្នាទាំងស្រុង)
+            const foundUser = authorizedUsers.find(u => 
+                u.user.toLowerCase() === uInput.toLowerCase() && u.pass === pInput
+            );
+            
+            if (foundUser) {
+                // បច្ចុប្បន្នភាពចំនួនដងដែលបានចូល
+                foundUser.login_count = (foundUser.login_count || 0) + 1;
+                localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
+                
+                // រក្សាទុកឈ្មោះពិតប្រាកដក្នុង LocalStorage
+                localStorage.setItem('logged_in_user', foundUser.user);
+                currentUser = foundUser.user;
+                
+                updateAuthUI();
+                renderPlaylist();
+                toggleModal('user-login-modal');
+                showToast("ចូលប្រើប្រាស់ជោគជ័យ!", "success");
+                
+                // សម្អាត Input
+                document.getElementById('login-user').value = '';
+                document.getElementById('login-pass').value = '';
+                
+                selectVideo(0);
+            } else {
+                showToast("ឈ្មោះ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ!", "error");
             }
         }
 
@@ -280,116 +264,30 @@
 
         function renderUserTable() {
             const container = document.getElementById('user-list-container');
-            document.getElementById('user-total-count').innerText = authorizedUsers.length;
-            document.getElementById('total-logins').innerText = authorizedUsers.reduce((sum, u) => sum + (u.login_count || 0), 0);
-            
             if (authorizedUsers.length === 0) {
-                container.innerHTML = `<div class="py-10 text-center text-slate-600 text-sm font-bold uppercase tracking-widest">គ្មានគណនីក្នុងប្រព័ន្ធ</div>`;
+                container.innerHTML = `<div class="py-10 text-center text-slate-600 text-sm">គ្មានគណនីក្នុងប្រព័ន្ធ</div>`;
                 return;
             }
 
             container.innerHTML = authorizedUsers.map((u, idx) => `
-                <div class="user-card grid grid-cols-12 gap-2 px-6 py-4 items-center mb-2">
-                    <div class="col-span-5 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-black text-white">${u.user.charAt(0).toUpperCase()}</div>
-                        <span class="text-sm font-bold text-white truncate">${u.user}</span>
+                <div class="user-card flex justify-between items-center px-6 py-4 mb-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-white">${u.user}</span>
+                        <span class="text-[10px] text-amber-500 font-mono">Pass: ${u.pass}</span>
                     </div>
-                    <div class="col-span-3 text-center flex items-center justify-center gap-2">
-                        <span class="bg-black/40 px-3 py-1 rounded-lg text-amber-500 font-mono text-xs border border-white/5 tracking-wider">${u.pass}</span>
-                        <button onclick="copyPass('${u.pass}')" class="text-[10px] text-slate-500 hover:text-white">📋</button>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-blue-400">Login: ${u.login_count || 0}</span>
+                        <button onclick="deleteUser(${idx})" class="text-red-500 text-xs">លុប</button>
                     </div>
-                    <div class="col-span-2 text-center text-blue-400 font-black text-sm">${u.login_count || 0}</div>
-                    <div class="col-span-2 text-right"><button onclick="deleteUser(${idx})" class="text-red-500 hover:text-red-400 p-2 text-xs transition-colors">លុប</button></div>
                 </div>
             `).join('');
-        }
-
-        function copyPass(text) {
-            const el = document.createElement('textarea');
-            el.value = text;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            showToast("បានចម្លងលេខសម្ងាត់!", "success");
-        }
-
-        function handleUserLogin() {
-            const uInput = document.getElementById('login-user').value.trim();
-            const pInput = document.getElementById('login-pass').value.trim();
-            
-            if (!uInput || !pInput) {
-                showToast("សូមបំពេញឈ្មោះ និងលេខសម្ងាត់!", "error");
-                return;
-            }
-
-            const userIdx = authorizedUsers.findIndex(u => u.user.toLowerCase() === uInput.toLowerCase() && u.pass === pInput);
-            
-            if (userIdx !== -1) {
-                // បច្ចុប្បន្នភាពទិន្នន័យ Login
-                authorizedUsers[userIdx].login_count = (authorizedUsers[userIdx].login_count || 0) + 1;
-                localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
-                
-                // រក្សាទុកស្ថានភាព Login
-                localStorage.setItem('logged_in_user', authorizedUsers[userIdx].user);
-                currentUser = authorizedUsers[userIdx].user;
-                
-                updateAuthUI();
-                renderPlaylist();
-                toggleModal('user-login-modal');
-                showToast("ចូលប្រើប្រាស់ជោគជ័យ!", "success");
-                
-                // សម្អាត Input
-                document.getElementById('login-user').value = '';
-                document.getElementById('login-pass').value = '';
-                
-                selectVideo(0);
-            } else {
-                showToast("ឈ្មោះអ្នកប្រើ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ!", "error");
-            }
-        }
-
-        function handleAdminLogin() {
-            const currentPass = getLatestAdminPass();
-            const inputPass = document.getElementById('admin-pass-input').value.trim();
-            
-            if (inputPass === currentPass) {
-                isAdmin = true;
-                toggleModal('admin-login-modal');
-                renderUserTable();
-                renderPlaylist();
-                toggleModal('admin-panel-modal');
-                showToast("Welcome Admin!", "success");
-                document.getElementById('admin-pass-input').value = "";
-            } else {
-                showToast("លេខសម្ងាត់ Admin មិនត្រឹមត្រូវ!", "error");
-            }
-        }
-
-        function changeAdminPasswordPrompt() {
-            const currentPass = getLatestAdminPass();
-            const oldP = prompt("បញ្ចូលលេខសម្ងាត់ Admin បច្ចុប្បន្ន ដើម្បីបញ្ជាក់:");
-            
-            if (oldP === null) return;
-
-            if (oldP.trim() === currentPass) {
-                const newP = prompt("បញ្ចូលលេខសម្ងាត់ Admin ថ្មី (យ៉ាងតិច ៣ ខ្ទង់):");
-                if (newP && newP.trim().length >= 3) {
-                    localStorage.setItem('vod_admin_pass', newP.trim());
-                    showToast("បានប្តូរលេខសម្ងាត់ Admin រួចរាល់!", "success");
-                } else if (newP !== null) {
-                    showToast("លេខសម្ងាត់ថ្មីខ្លីពេក!", "error");
-                }
-            } else {
-                showToast("លេខសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ!", "error");
-            }
         }
 
         function addUser() {
             const u = document.getElementById('new-username').value.trim();
             const p = document.getElementById('new-password').value.trim();
             
-            if (!u || !p) return showToast("សូមបំពេញទិន្នន័យឱ្យគ្រប់!", "error");
+            if (!u || !p) return showToast("សូមបំពេញទិន្នន័យ!", "error");
             if (authorizedUsers.some(user => user.user.toLowerCase() === u.toLowerCase())) return showToast("ឈ្មោះនេះមានរួចហើយ!", "error");
             
             authorizedUsers.push({ user: u, pass: p, login_count: 0 });
@@ -397,30 +295,31 @@
             
             document.getElementById('new-username').value = '';
             document.getElementById('new-password').value = '';
-            
             renderUserTable();
-            showToast("បានបន្ថែមអ្នកប្រើថ្មី", "success");
+            showToast("បន្ថែមបានជោគជ័យ", "success");
         }
 
         function deleteUser(idx) {
-            if (confirm("តើអ្នកពិតជាចង់លុបអ្នកប្រើនេះមែនទេ?")) {
+            if (confirm("តើអ្នកចង់លុបមែនទេ?")) {
+                const deletedUser = authorizedUsers[idx].user;
                 authorizedUsers.splice(idx, 1);
                 localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
-                renderUserTable();
+                
+                // បើសិនជាលុប User ដែលកំពុង Login ស្រាប់ ត្រូវ Logout គាត់ចេញ
+                if (currentUser === deletedUser) {
+                    localStorage.removeItem('logged_in_user');
+                    location.reload();
+                } else {
+                    renderUserTable();
+                }
             }
         }
 
         function selectVideo(i) {
-            if (!currentUser && !isAdmin) {
-                toggleModal('user-login-modal');
-                return;
-            }
+            if (!currentUser && !isAdmin) return toggleModal('user-login-modal');
             activeVideoIdx = i;
             renderPlaylist();
-            loadPlayer(playlist[i]);
-        }
-
-        function loadPlayer(video) {
+            const video = playlist[i];
             const wrapper = document.getElementById('player-wrapper');
             document.getElementById('current-title').innerText = video.title;
             document.getElementById('current-desc').innerText = video.desc;
@@ -429,40 +328,43 @@
 
         function updateAuthUI() {
             document.getElementById('user-status-display').innerText = `ស្ថានភាព: ${currentUser}`;
-            document.getElementById('auth-btn').innerText = "Logout";
+            document.getElementById('auth-btn').innerText = "ចាកចេញ";
             document.getElementById('auth-btn').onclick = () => { 
                 localStorage.removeItem('logged_in_user');
                 location.reload(); 
             };
         }
 
+        function handleAdminLogin() {
+            const currentPass = localStorage.getItem('vod_admin_pass') || DEFAULT_ADMIN_PASS;
+            if (document.getElementById('admin-pass-input').value === currentPass) {
+                isAdmin = true;
+                toggleModal('admin-login-modal');
+                renderUserTable();
+                renderPlaylist();
+                toggleModal('admin-panel-modal');
+                showToast("Welcome Admin!", "success");
+            } else {
+                showToast("លេខសម្ងាត់ Admin ខុស!", "error");
+            }
+        }
+
         function toggleModal(id) {
             const m = document.getElementById(id);
-            if (!m) return;
-            if (m.classList.contains('hidden')) {
-                m.classList.remove('hidden');
-                m.classList.add('flex');
-            } else {
-                m.classList.add('hidden');
-                m.classList.remove('flex');
-            }
+            m.classList.toggle('hidden');
+            m.classList.contains('hidden') ? m.classList.remove('flex') : m.classList.add('flex');
         }
 
         function handleAdminIconClick() {
-            if (isAdmin) {
-                renderUserTable();
-                toggleModal('admin-panel-modal');
-            } else {
-                toggleModal('admin-login-modal');
-            }
+            if (isAdmin) toggleModal('admin-panel-modal');
+            else toggleModal('admin-login-modal');
         }
 
         function showToast(msg, type) {
-            const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-black shadow-2xl`;
+            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-black`;
             toast.innerText = msg;
-            container.appendChild(toast);
+            document.getElementById('toast-container').appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
         }
 
