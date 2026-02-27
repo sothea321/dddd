@@ -116,7 +116,7 @@
                     <div id="playlist-lock" class="playlist-lock-overlay">
                         <div class="text-3xl mb-2">🔒</div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">បញ្ជីភាគត្រូវបានលាក់</p>
-                        <p class="text-[9px] text-slate-500 mt-1">សូមចូលប្រើប្រាស់ដើម្បីមេីលភាគទាំងអស់</p>
+                        <p class="text-[9px] text-slate-500 mt-1">សូមចូលប្រើប្រាស់ដើម្បីមើលភាគទាំងអស់</p>
                     </div>
 
                     <div id="playlist" class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar"></div>
@@ -183,20 +183,18 @@
         let activeVideoIdx = -1;
 
         function initApp() {
-            // ទាញយកឈ្មោះដែលបាន Login ចុងក្រោយ
+            // ទាញយកឈ្មោះដែលបាន Login ចុងក្រោយពី LocalStorage
             const loggedUser = localStorage.getItem('logged_in_user');
             
             if (loggedUser) {
-                // ឆែកមើលឈ្មោះក្នុងបញ្ជីដោយមិនខ្វល់ពីអក្សរតូចធំ (Case-insensitive check)
+                // ផ្ទៀងផ្ទាត់ឈ្មោះក្នុងបញ្ជី (ធានាថាឈ្មោះនៅមានក្នុងបញ្ជីអ្នកប្រើប្រាស់)
                 const found = authorizedUsers.find(u => u.user.toLowerCase() === loggedUser.toLowerCase());
                 if (found) {
-                    currentUser = found.user; // កំណត់ឈ្មោះអ្នកប្រើប្រាស់បច្ចុប្បន្ន
+                    currentUser = found.user; 
                     updateAuthUI();
                     renderPlaylist();
-                    // បើកវីដេអូទី១ ដោយស្វ័យប្រវត្តនៅពេលធ្លាប់ Login
                     selectVideo(0);
                 } else {
-                    // បើរកមិនឃើញឈ្មោះក្នុងបញ្ជី (អាចមកពី Admin លុបចោល) ត្រូវសម្អាត Session
                     localStorage.removeItem('logged_in_user');
                     renderPlaylist();
                 }
@@ -210,36 +208,36 @@
             const pInput = document.getElementById('login-pass').value.trim();
             
             if (!uInput || !pInput) {
-                showToast("សូមបំពេញឱ្យគ្រប់!", "error");
+                showToast("សូមបំពេញឈ្មោះ និងលេខសម្ងាត់!", "error");
                 return;
             }
 
-            // ស្វែងរក User (ឆែកឈ្មោះ Case-insensitive តែ Password ត្រូវតែដូចគ្នាទាំងស្រុង)
+            // ការផ្ទៀងផ្ទាត់ដោយយកចិត្តទុកដាក់លើអក្សរតូចធំសម្រាប់ឈ្មោះ (Case-Insensitive)
             const foundUser = authorizedUsers.find(u => 
                 u.user.toLowerCase() === uInput.toLowerCase() && u.pass === pInput
             );
             
             if (foundUser) {
-                // បច្ចុប្បន្នភាពចំនួនដងដែលបានចូល
+                // កត់ត្រាការចូលប្រើប្រាស់
                 foundUser.login_count = (foundUser.login_count || 0) + 1;
                 localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
                 
-                // រក្សាទុកឈ្មោះពិតប្រាកដ (Original Case) ក្នុង LocalStorage ដើម្បីប្រើពេល Refresh
+                // រក្សាទុកស្ថានភាព Login
                 localStorage.setItem('logged_in_user', foundUser.user);
                 currentUser = foundUser.user;
                 
                 updateAuthUI();
                 renderPlaylist();
                 toggleModal('user-login-modal');
-                showToast("ចូលប្រើប្រាស់ជោគជ័យ!", "success");
+                showToast("សូមស្វាគមន៍! ការចូលប្រើប្រាស់ជោគជ័យ។", "success");
                 
-                // សម្អាត Input
+                // សម្អាតប្រអប់បញ្ចូល
                 document.getElementById('login-user').value = '';
                 document.getElementById('login-pass').value = '';
                 
                 selectVideo(0);
             } else {
-                showToast("ឈ្មោះ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ!", "error");
+                showToast("ឈ្មោះ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ! សូមពិនិត្យឡើងវិញ។", "error");
             }
         }
 
@@ -267,7 +265,7 @@
         function renderUserTable() {
             const container = document.getElementById('user-list-container');
             if (authorizedUsers.length === 0) {
-                container.innerHTML = `<div class="py-10 text-center text-slate-600 text-sm">គ្មានគណនីក្នុងប្រព័ន្ធ</div>`;
+                container.innerHTML = `<div class="py-10 text-center text-slate-600 text-sm">មិនទាន់មានគណនីក្នុងប្រព័ន្ធនៅឡើយ</div>`;
                 return;
             }
 
@@ -275,11 +273,11 @@
                 <div class="user-card flex justify-between items-center px-6 py-4 mb-2">
                     <div class="flex flex-col">
                         <span class="text-sm font-bold text-white">${u.user}</span>
-                        <span class="text-[10px] text-amber-500 font-mono">Pass: ${u.pass}</span>
+                        <span class="text-[10px] text-amber-500 font-mono italic">Pass: ${u.pass}</span>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-xs text-blue-400">Login: ${u.login_count || 0}</span>
-                        <button onclick="deleteUser(${idx})" class="text-red-500 text-xs hover:text-red-400">លុប</button>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md font-bold uppercase">Login: ${u.login_count || 0}</span>
+                        <button onclick="deleteUser(${idx})" class="text-red-500 text-xs hover:text-red-400 font-bold transition-colors">លុប</button>
                     </div>
                 </div>
             `).join('');
@@ -289,11 +287,11 @@
             const u = document.getElementById('new-username').value.trim();
             const p = document.getElementById('new-password').value.trim();
             
-            if (!u || !p) return showToast("សូមបំពេញទិន្នន័យ!", "error");
+            if (!u || !p) return showToast("សូមបញ្ចូលព័ត៌មានឱ្យបានគ្រប់គ្រាន់!", "error");
             
-            // ការពារការបង្កើតឈ្មោះស្ទួន (Case-insensitive)
+            // បញ្ជៀសការបង្កើតឈ្មោះស្ទួន
             if (authorizedUsers.some(user => user.user.toLowerCase() === u.toLowerCase())) {
-                return showToast("ឈ្មោះនេះមានរួចហើយ!", "error");
+                return showToast("ឈ្មោះនេះមានអ្នកប្រើប្រាស់រួចហើយ!", "error");
             }
             
             authorizedUsers.push({ user: u, pass: p, login_count: 0 });
@@ -302,16 +300,15 @@
             document.getElementById('new-username').value = '';
             document.getElementById('new-password').value = '';
             renderUserTable();
-            showToast("បន្ថែមបានជោគជ័យ", "success");
+            showToast("បានបន្ថែមគណនីថ្មីដោយជោគជ័យ", "success");
         }
 
         function deleteUser(idx) {
-            if (confirm("តើអ្នកចង់លុបមែនទេ?")) {
+            if (confirm("តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?")) {
                 const deletedUser = authorizedUsers[idx].user;
                 authorizedUsers.splice(idx, 1);
                 localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
                 
-                // បើសិនជាលុប User ដែលកំពុង Login ស្រាប់ ត្រូវ Logout គាត់ចេញភ្លាម
                 if (currentUser === deletedUser) {
                     localStorage.removeItem('logged_in_user');
                     location.reload();
@@ -336,9 +333,14 @@
         }
 
         function updateAuthUI() {
-            document.getElementById('user-status-display').innerText = `ស្ថានភាព: ${currentUser}`;
-            document.getElementById('auth-btn').innerText = "ចាកចេញ";
-            document.getElementById('auth-btn').onclick = () => { 
+            const statusEl = document.getElementById('user-status-display');
+            const authBtn = document.getElementById('auth-btn');
+            
+            statusEl.innerText = `អ្នកប្រើប្រាស់: ${currentUser}`;
+            statusEl.classList.replace('text-slate-400', 'text-green-400');
+            authBtn.innerText = "ចាកចេញ";
+            authBtn.classList.add('bg-red-500/10', 'text-red-400');
+            authBtn.onclick = () => { 
                 localStorage.removeItem('logged_in_user');
                 location.reload(); 
             };
@@ -346,27 +348,27 @@
 
         function handleAdminLogin() {
             const currentPass = localStorage.getItem('vod_admin_pass') || DEFAULT_ADMIN_PASS;
-            if (document.getElementById('admin-pass-input').value === currentPass) {
+            const input = document.getElementById('admin-pass-input');
+            
+            if (input.value === currentPass) {
                 isAdmin = true;
                 toggleModal('admin-login-modal');
                 renderUserTable();
                 renderPlaylist();
                 toggleModal('admin-panel-modal');
-                showToast("Welcome Admin!", "success");
+                showToast("ចូលក្នុងប្រព័ន្ធគ្រប់គ្រងជោគជ័យ!", "success");
+                input.value = '';
             } else {
-                showToast("លេខសម្ងាត់ Admin ខុស!", "error");
+                showToast("លេខសម្ងាត់ Admin មិនត្រឹមត្រូវ!", "error");
             }
         }
 
         function toggleModal(id) {
             const m = document.getElementById(id);
             if (!m) return;
-            m.classList.toggle('hidden');
-            if (m.classList.contains('hidden')) {
-                m.classList.remove('flex');
-            } else {
-                m.classList.add('flex');
-            }
+            const isHidden = m.classList.toggle('hidden');
+            if (!isHidden) m.classList.add('flex');
+            else m.classList.remove('flex');
         }
 
         function handleAdminIconClick() {
@@ -377,10 +379,14 @@
         function showToast(msg, type) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-black shadow-2xl`;
+            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-bold shadow-2xl border border-white/20`;
             toast.innerText = msg;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         window.onload = initApp;
