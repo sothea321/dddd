@@ -116,7 +116,7 @@
                     <div id="playlist-lock" class="playlist-lock-overlay">
                         <div class="text-3xl mb-2">🔒</div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">បញ្ជីភាគត្រូវបានលាក់</p>
-                        <p class="text-[9px] text-slate-500 mt-1">សូមចូលប្រើប្រាស់ដើម្បីមើលភាគទាំងអស់</p>
+                        <p class="text-[9px] text-slate-500 mt-1">សូមចូលប្រើប្រាស់ដើម្បីមេីលភាគទាំងអស់</p>
                     </div>
 
                     <div id="playlist" class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar"></div>
@@ -190,11 +190,13 @@
                 // ឆែកមើលឈ្មោះក្នុងបញ្ជីដោយមិនខ្វល់ពីអក្សរតូចធំ (Case-insensitive check)
                 const found = authorizedUsers.find(u => u.user.toLowerCase() === loggedUser.toLowerCase());
                 if (found) {
-                    currentUser = found.user; // ប្រើឈ្មោះដែលរកឃើញក្នុង Database
+                    currentUser = found.user; // កំណត់ឈ្មោះអ្នកប្រើប្រាស់បច្ចុប្បន្ន
                     updateAuthUI();
                     renderPlaylist();
+                    // បើកវីដេអូទី១ ដោយស្វ័យប្រវត្តនៅពេលធ្លាប់ Login
                     selectVideo(0);
                 } else {
+                    // បើរកមិនឃើញឈ្មោះក្នុងបញ្ជី (អាចមកពី Admin លុបចោល) ត្រូវសម្អាត Session
                     localStorage.removeItem('logged_in_user');
                     renderPlaylist();
                 }
@@ -222,7 +224,7 @@
                 foundUser.login_count = (foundUser.login_count || 0) + 1;
                 localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
                 
-                // រក្សាទុកឈ្មោះពិតប្រាកដក្នុង LocalStorage
+                // រក្សាទុកឈ្មោះពិតប្រាកដ (Original Case) ក្នុង LocalStorage ដើម្បីប្រើពេល Refresh
                 localStorage.setItem('logged_in_user', foundUser.user);
                 currentUser = foundUser.user;
                 
@@ -277,7 +279,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <span class="text-xs text-blue-400">Login: ${u.login_count || 0}</span>
-                        <button onclick="deleteUser(${idx})" class="text-red-500 text-xs">លុប</button>
+                        <button onclick="deleteUser(${idx})" class="text-red-500 text-xs hover:text-red-400">លុប</button>
                     </div>
                 </div>
             `).join('');
@@ -288,7 +290,11 @@
             const p = document.getElementById('new-password').value.trim();
             
             if (!u || !p) return showToast("សូមបំពេញទិន្នន័យ!", "error");
-            if (authorizedUsers.some(user => user.user.toLowerCase() === u.toLowerCase())) return showToast("ឈ្មោះនេះមានរួចហើយ!", "error");
+            
+            // ការពារការបង្កើតឈ្មោះស្ទួន (Case-insensitive)
+            if (authorizedUsers.some(user => user.user.toLowerCase() === u.toLowerCase())) {
+                return showToast("ឈ្មោះនេះមានរួចហើយ!", "error");
+            }
             
             authorizedUsers.push({ user: u, pass: p, login_count: 0 });
             localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
@@ -305,7 +311,7 @@
                 authorizedUsers.splice(idx, 1);
                 localStorage.setItem('vod_users', JSON.stringify(authorizedUsers));
                 
-                // បើសិនជាលុប User ដែលកំពុង Login ស្រាប់ ត្រូវ Logout គាត់ចេញ
+                // បើសិនជាលុប User ដែលកំពុង Login ស្រាប់ ត្រូវ Logout គាត់ចេញភ្លាម
                 if (currentUser === deletedUser) {
                     localStorage.removeItem('logged_in_user');
                     location.reload();
@@ -316,7 +322,10 @@
         }
 
         function selectVideo(i) {
-            if (!currentUser && !isAdmin) return toggleModal('user-login-modal');
+            if (!currentUser && !isAdmin) {
+                toggleModal('user-login-modal');
+                return;
+            }
             activeVideoIdx = i;
             renderPlaylist();
             const video = playlist[i];
@@ -351,8 +360,13 @@
 
         function toggleModal(id) {
             const m = document.getElementById(id);
+            if (!m) return;
             m.classList.toggle('hidden');
-            m.classList.contains('hidden') ? m.classList.remove('flex') : m.classList.add('flex');
+            if (m.classList.contains('hidden')) {
+                m.classList.remove('flex');
+            } else {
+                m.classList.add('flex');
+            }
         }
 
         function handleAdminIconClick() {
@@ -361,10 +375,11 @@
         }
 
         function showToast(msg, type) {
+            const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-black`;
+            toast.className = `notification ${type === 'success' ? 'bg-blue-600' : 'bg-red-600'} text-xs font-black shadow-2xl`;
             toast.innerText = msg;
-            document.getElementById('toast-container').appendChild(toast);
+            container.appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
         }
 
